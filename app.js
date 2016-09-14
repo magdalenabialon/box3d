@@ -1,6 +1,10 @@
+//https://manu.ninja/webgl-3d-model-viewer-using-three-js
+
+
 var camera, scene, renderer;
 var mesh; //cube
 var material;
+var lighting, ambient, keyLight, fillLight, backLight;
 
 
 var texture1 = THREE.ImageUtils.loadTexture( 'js.jpg' );
@@ -15,29 +19,53 @@ animate();
 
 function init() {
 
-  camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
+  camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 5, 1200 );
   camera.position.z = 200;
   scene = new THREE.Scene();
 
 
 
+//light on L key
+
+  lighting = false;
+
+  ambient = new THREE.AmbientLight(0xffffff, 0.25);
+  scene.add(ambient);
+
+  keyLight = new THREE.DirectionalLight(new THREE.Color('hsl(80, 100%, 75%)'), 1.0);
+  keyLight.position.set(-100, 0, 100);
+
+  fillLight = new THREE.DirectionalLight(new THREE.Color('hsl(100, 100%, 75%)'), 0.75);
+  fillLight.position.set(100, 0, 100);
+
+  backLight = new THREE.DirectionalLight(0xffffff, 3.0);
+  backLight.position.set(100, 0, -100).normalize();
+
+  //
+  //
   // var ambient = new THREE.AmbientLight( 0x444444 );
 	// scene.add( ambient );
-
+  //
 	// var directionalLight = new THREE.DirectionalLight( 0xffeedd );
 	// directionalLight.position.set( 0, 0, 2 ).normalize();
 	// scene.add( directionalLight );
+  //
+  //
 
 
+//textures
 
-  //var texture = new THREE.TextureLoader().load( 'http://3.bp.blogspot.com/_5ke3OeOEo0g/TLnFQf5KHhI/AAAAAAAACp4/qJuSAwYdcW0/s1600/1_store.jpg' );
-  // var usertext1 = new THREE.TextureLoader().load( 'js.jpg' );
-  // var usertext2 = new THREE.TextureLoader().load( 'feature.jpg' );
-  // var usertext3 = new THREE.TextureLoader().load( 'programming-or-googling.jpg' );
+  var texture = new THREE.TextureLoader().load( 'http://3.bp.blogspot.com/_5ke3OeOEo0g/TLnFQf5KHhI/AAAAAAAACp4/qJuSAwYdcW0/s1600/1_store.jpg' );
+  var usertext1 = new THREE.TextureLoader().load( 'js.jpg' );
+  var usertext2 = new THREE.TextureLoader().load( 'feature.jpg' );
+  var usertext3 = new THREE.TextureLoader().load( 'programming-or-googling.jpg' );
 
   var geometry = new THREE.BoxBufferGeometry( 50, 50, 50 );
-  material = new THREE.MeshBasicMaterial( { map: texture3 } );
+  material = new THREE.MeshStandardMaterial( { map: texture3 } );
 
+
+
+//trying to add different shape than the cube
 
   mesh = new THREE.Mesh( geometry, material );
   scene.add( mesh );
@@ -103,15 +131,39 @@ function onWindowResize() {
 
 }
 
+function onKeyboardEvent(e) {
+
+        if (e.code === 'KeyL') {
+            console.log('yes')
+            lighting = !lighting;
+
+            if (lighting) {
+
+                ambient.intensity = 0.55;
+                scene.add(keyLight);
+                scene.add(fillLight);
+                scene.add(backLight);
+
+            } else {
+
+                ambient.intensity = 1.0;
+                scene.remove(keyLight);
+                scene.remove(fillLight);
+                scene.remove(backLight);
+
+            }
+
+        }
+
+    }
+
+
 
 
 
 function animate() {
 
   requestAnimationFrame( animate );
-
-  // mesh.rotation.x += 0.005;
-  // mesh.rotation.y += 0.01;
 
   renderer.render( scene, camera );
 
@@ -167,3 +219,5 @@ $('button').click(function(event){
   }
 
 })
+
+window.addEventListener('keydown', onKeyboardEvent, false);
