@@ -2,11 +2,11 @@
 
 
 var camera, scene, renderer;
-var mesh; //cube
-var material;
+var material, mesh; //cube
 var lighting, ambient, keyLight, fillLight, backLight;
+var geometry;
 
-
+//textures
 var texture1 = THREE.ImageUtils.loadTexture( 'js.jpg' );
 var texture2 = THREE.ImageUtils.loadTexture( "feature.jpg" );
 var texture3 = THREE.ImageUtils.loadTexture( "programming-or-googling.jpg" );
@@ -21,15 +21,16 @@ function init() {
 
   camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 5, 1200 );
   camera.position.z = 200;
+  // camera.focus
   scene = new THREE.Scene();
 
 
 
 //light on L key
 
-  lighting = false;
+  lighting = true;
 
-  ambient = new THREE.AmbientLight(0xffffff, 0.25);
+  ambient = new THREE.AmbientLight(0xffffff, 1.25);
   scene.add(ambient);
 
   keyLight = new THREE.DirectionalLight(new THREE.Color('hsl(80, 100%, 75%)'), 1.0);
@@ -41,65 +42,80 @@ function init() {
   backLight = new THREE.DirectionalLight(0xffffff, 3.0);
   backLight.position.set(100, 0, -100).normalize();
 
-  //
-  //
-  // var ambient = new THREE.AmbientLight( 0x444444 );
-	// scene.add( ambient );
-  //
-	// var directionalLight = new THREE.DirectionalLight( 0xffeedd );
-	// directionalLight.position.set( 0, 0, 2 ).normalize();
-	// scene.add( directionalLight );
-  //
-  //
 
 
-//textures
 
-  var texture = new THREE.TextureLoader().load( 'http://3.bp.blogspot.com/_5ke3OeOEo0g/TLnFQf5KHhI/AAAAAAAACp4/qJuSAwYdcW0/s1600/1_store.jpg' );
-  var usertext1 = new THREE.TextureLoader().load( 'js.jpg' );
-  var usertext2 = new THREE.TextureLoader().load( 'feature.jpg' );
-  var usertext3 = new THREE.TextureLoader().load( 'programming-or-googling.jpg' );
 
-  var geometry = new THREE.BoxBufferGeometry( 50, 50, 50 );
+  geometry = new THREE.BoxBufferGeometry( 15, 15, 15 );
+
   material = new THREE.MeshStandardMaterial( { map: texture3 } );
-
-
-
-//trying to add different shape than the cube
 
   mesh = new THREE.Mesh( geometry, material );
   scene.add( mesh );
 
 
-  var onProgress = function ( xhr ) {
-    if ( xhr.lengthComputable ) {
-      var percentComplete = xhr.loaded / xhr.total * 100;
-      console.log( Math.round(percentComplete, 2) + '% downloaded' );
-    }
-  };
 
-  var onError = function ( xhr ) { };
+//ground
+  var groundGeo = new THREE.PlaneBufferGeometry( 100, 100 );
+  var groundMat = new THREE.MeshPhongMaterial( { color: 0xffffff, specular: 0x050505 } );
+  groundMat.color.setHSL( 0.095, 1, 0.75 );
+
+  var ground = new THREE.Mesh( groundGeo, groundMat );
+  ground.rotation.x = -Math.PI/2;
+  ground.position.y = -30;
+  scene.add( ground );
+
+  ground.receiveShadow = true;
+
+  //trying to add different shape than the cube
+
+  // /* Model */
+  //
+  // var mtlLoader = new THREE.MTLLoader();
+  // mtlLoader.setBaseUrl('/');
+  // mtlLoader.setPath('/');
+  // mtlLoader.load('box.mtl', function (materials) {
+  //
+  //     // materials.preload();
+  //     //
+  //     // materials.materials.default.map.magFilter = THREE.NearestFilter;
+  //     // materials.materials.default.map.minFilter = THREE.LinearFilter;
+  //
+  //     var objLoader = new THREE.OBJLoader();
+  //     // objLoader.setMaterials(materials);
+  //     objLoader.setPath('/');
+  //     objLoader.load('box.obj', function (object) {
+  //
+  //         geometry = object
+  //     });
+  //
+  // });
 
 
-    THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+  /* Model */
+  //
+  // var mtlLoader = new THREE.MTLLoader();
+  // mtlLoader.setBaseUrl('/');
+  // mtlLoader.setPath('/');
+  // mtlLoader.load('box.mtl', function (materials) {
+  //
+  //     materials.preload();
 
-    var mtlLoader = new THREE.MTLLoader();
-    mtlLoader.setPath( '/' );
-    mtlLoader.load( 'mesh-box.mtl', function( materials ) {
+      // materials.materials.default.map.magFilter = THREE.NearestFilter;
+      // materials.materials.default.map.minFilter = THREE.LinearFilter;
 
-      materials.preload();
-      //
       // var objLoader = new THREE.OBJLoader();
-      // objLoader.setMaterials( materials );
-      // objLoader.setPath( '/' );
-      // objLoader.load( 'male02.obj', function ( object ) {
-      //
-      //   object.position.y = - 95;
-      //   scene.add( object );
-      //
-      // }, onProgress, onError );
-
-  });
+      // // objLoader.setMaterials(materials);
+      // objLoader.setPath('/');
+      // var material = new THREE.MeshBasicMaterial( { map: texture3 } );
+      // console.log(objLoader.setMaterials(material));
+      // objLoader.load('box.obj', function (object) {
+      //     // mesh = new THREE.Mesh( object, material );
+      //     scene.add( object );
+      //     // scene.add( object, material );
+      // });
+  //
+  // });
 
 
 
@@ -114,7 +130,7 @@ function init() {
   controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.25;
-  controls.enableZoom = false;
+  controls.enableZoom = true;
 
   window.addEventListener( 'resize', onWindowResize, true );
 
@@ -134,12 +150,12 @@ function onWindowResize() {
 function onKeyboardEvent(e) {
 
         if (e.code === 'KeyL') {
-            console.log('yes')
+            // console.log('yes');
             lighting = !lighting;
 
             if (lighting) {
 
-                ambient.intensity = 0.55;
+                ambient.intensity = 2.25;
                 scene.add(keyLight);
                 scene.add(fillLight);
                 scene.add(backLight);
@@ -213,7 +229,7 @@ $('button').click(function(event){
   } else if (clickedTexture === 'texture2'){
     material.map = texture2;
     material.needsUpdate = true;
-  }else if (clickedTexture === 'texture3'){
+  } else if (clickedTexture === 'texture3'){
     material.map = texture3;
     material.needsUpdate = true;
   }
