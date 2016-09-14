@@ -16,7 +16,7 @@ animate();
 function init() {
 
   camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
-  camera.position.z = 400;
+  camera.position.z = 200;
   scene = new THREE.Scene();
 
 
@@ -35,7 +35,7 @@ function init() {
   // var usertext2 = new THREE.TextureLoader().load( 'feature.jpg' );
   // var usertext3 = new THREE.TextureLoader().load( 'programming-or-googling.jpg' );
 
-  var geometry = new THREE.BoxBufferGeometry( 100, 100, 100 );
+  var geometry = new THREE.BoxBufferGeometry( 50, 50, 50 );
   material = new THREE.MeshBasicMaterial( { map: texture3 } );
 
 
@@ -83,6 +83,11 @@ function init() {
 
   //
 
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.25;
+  controls.enableZoom = false;
+
   window.addEventListener( 'resize', onWindowResize, true );
 
 }
@@ -113,14 +118,14 @@ function animate() {
 }
 
 
-window.addEventListener('mousemove', function (e) {
-  var mouseX = ( e.clientX - window.innerWidth / 2 );
-  var mouseY = ( e.clientY - window.innerHeight / 2 );
-  mesh.rotation.x = mouseY * 0.005;
-  mesh.rotation.y = mouseX * 0.005;
-
-  renderer.render( scene, camera );
-}, false);
+// window.addEventListener('mousemove', function (e) {
+//   var mouseX = ( e.clientX - window.innerWidth / 2 );
+//   var mouseY = ( e.clientY - window.innerHeight / 2 );
+//   mesh.rotation.x = mouseY * 0.005;
+//   mesh.rotation.y = mouseX * 0.005;
+//
+//   renderer.render( scene, camera );
+// }, false);
 
 
 
