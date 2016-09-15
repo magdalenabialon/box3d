@@ -1,4 +1,4 @@
-// if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
 var camera, scene, renderer, dirLight, hemiLight;
 var mixers = [];
@@ -30,8 +30,8 @@ function init() {
 
   scene = new THREE.Scene();
 
-  scene.fog = new THREE.Fog( 0xffffff, 1, 5000 );
-  scene.fog.color.setHSL( 0.6, 0, 1 );
+  // scene.fog = new THREE.Fog( 0xffffff, 1, 5000 );
+  // scene.fog.color.setHSL( 0.6, 0, 1 );
 
 
 
@@ -97,9 +97,9 @@ function init() {
     offset:      { value: 33 },
     exponent:    { value: 0.6 }
   };
-  uniforms.topColor.value.copy( hemiLight.color );
+  // uniforms.topColor.value.copy( hemiLight.color );
 
-  scene.fog.color.copy( uniforms.bottomColor.value );
+  // scene.fog.color.copy( uniforms.bottomColor.value );
 
   var skyGeo = new THREE.SphereGeometry( 4000, 32, 15 );
   var skyMat = new THREE.ShaderMaterial( { vertexShader: vertexShader, fragmentShader: fragmentShader, uniforms: uniforms, side: THREE.BackSide } );
@@ -109,32 +109,6 @@ function init() {
 
 
 
-
-
-  // MODEL
-
-  // var loader = new THREE.JSONLoader();
-  //
-  // loader.load( "models/animated/flamingo.js", function( geometry ) {
-  //
-  //   var material = new THREE.MeshPhongMaterial( { color: 0xffffff, specular: 0xffffff, shininess: 20, morphTargets: true, vertexColors: THREE.FaceColors, shading: THREE.FlatShading } );
-  //   var mesh = new THREE.Mesh( geometry, material );
-  //
-  //   var s = 0.35;
-  //   mesh.scale.set( s, s, s );
-  //   mesh.position.y = 15;
-  //   mesh.rotation.y = -1;
-  //
-  //   mesh.castShadow = true;
-  //   mesh.receiveShadow = true;
-  //
-  //   scene.add( mesh );
-  //
-  //   var mixer = new THREE.AnimationMixer( mesh );
-  //   mixer.clipAction( geometry.animations[ 0 ] ).setDuration( 1 ).play();
-  //   mixers.push( mixer );
-  //
-  // } );
 
 
 //CUBE
@@ -154,6 +128,78 @@ function init() {
 
     scene.add( mesh );
 
+
+
+
+
+
+    //OBJ BOX
+
+    material1 = new THREE.MeshBasicMaterial( { color: 0x00ff00, wireframe: true } );
+    // material2 = new THREE.MeshStandardMaterial( { map: texture1 } );
+    material3 = new THREE.MeshPhongMaterial( { color: 0x00ff00 } );
+    // material4 = new THREE.MeshStandardMaterial( { map: texture3, overdraw: 0.5 } );
+    var material5 = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'feature.jpg' ) } ) ;
+    material4 = new THREE.MeshStandardMaterial();
+
+
+      var loader = new THREE.OBJLoader();
+      loader.load( 'box.obj', function ( object ) {
+        // object.scale = new THREE.Vector3( 25, 25, 25 );
+
+        object.position.x += 20.2;
+        object.position.y += 20.8;
+
+        object.scale.x = 3;
+        object.scale.y = 3;
+        object.scale.z = 3;
+
+        var texture = THREE.ImageUtils.loadTexture('js.jpg');
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+
+        texture.repeat.set(2,2);
+
+        var material4 = new THREE.MeshStandardMaterial({
+          map: texture
+        });
+
+        object.traverse( function(child) {
+          if (child instanceof THREE.Mesh){
+            child.material.map = texture
+          }
+        })
+
+
+        // object.castShadow = true;
+        // object.receiveShadow = true;
+
+
+
+        // object.material = material4;
+
+        // debugger
+        // material4.map = loader.load('feature.jpg');
+
+        // debugger
+
+        // material4.map.wrapS = THREE.RepeatWrapping;
+
+        // scene.add( object );
+        //
+        //
+        // // meshBox = new THREE.Mesh( material );
+        //
+        // object.traverse(function(child) {
+        //     if (child instanceof THREE.Mesh){
+        //         child.material = material5;
+        //         // myMesh = child;
+        //         // // myMesh.material.map = THREE.ImageUtils.loadTexture( 'js.jpg');
+        //         // myMesh.material.needsUpdate = true;
+        //     }
+        // });
+        scene.add( object );
+
+      } );
 
 
 
