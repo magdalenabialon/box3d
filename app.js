@@ -248,7 +248,7 @@ function onKeyboardEvent(e) {
 
         }
 
-    }
+  }
 
 
 

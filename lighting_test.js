@@ -6,6 +6,18 @@ var stats;
 
 var clock = new THREE.Clock();
 
+
+var material, mesh;
+
+//textures
+var texture1 = THREE.ImageUtils.loadTexture( 'js.jpg' );
+var texture2 = THREE.ImageUtils.loadTexture( "feature.jpg" );
+var texture3 = THREE.ImageUtils.loadTexture( "programming-or-googling.jpg" );
+
+
+
+
+
 init();
 animate();
 
@@ -21,19 +33,8 @@ function init() {
   scene.fog = new THREE.Fog( 0xffffff, 1, 5000 );
   scene.fog.color.setHSL( 0.6, 0, 1 );
 
-  /*
-  controls = new THREE.TrackballControls( camera );
 
-  controls.rotateSpeed = 1.0;
-  controls.zoomSpeed = 1.2;
-  controls.panSpeed = 0.8;
 
-  controls.noZoom = false;
-  controls.noPan = false;
-
-  controls.staticMoving = true;
-  controls.dynamicDampingFactor = 0.15;
-  */
 
   // LIGHTS
 
@@ -67,6 +68,10 @@ function init() {
   dirLight.shadowBias = -0.0001;
   //dirLight.shadowCameraVisible = true;
 
+
+
+
+
   // GROUND
 
   var groundGeo = new THREE.PlaneBufferGeometry( 10000, 10000 );
@@ -79,6 +84,8 @@ function init() {
   scene.add( ground );
 
   ground.receiveShadow = true;
+
+
 
   // SKYDOME
 
@@ -99,12 +106,6 @@ function init() {
 
   var sky = new THREE.Mesh( skyGeo, skyMat );
   scene.add( sky );
-
-
-
-
-
-
 
 
 
@@ -135,11 +136,14 @@ function init() {
   //
   // } );
 
+
+//CUBE
+
   var texture3 = THREE.ImageUtils.loadTexture( "programming-or-googling.jpg" );
 
     var geometry = new THREE.BoxBufferGeometry( 50, 50, 50 );
-    var material = new THREE.MeshStandardMaterial( { map: texture3 } );
-    var mesh = new THREE.Mesh( geometry, material );
+    material = new THREE.MeshStandardMaterial( { map: texture3 } );
+    mesh = new THREE.Mesh( geometry, material );
     var s = 0.35;
     mesh.scale.set( s, s, s );
     mesh.position.y = 15;
@@ -149,8 +153,6 @@ function init() {
     mesh.receiveShadow = true;
 
     scene.add( mesh );
-
-
 
 
 
@@ -177,6 +179,11 @@ function init() {
   // container.appendChild( stats.dom );
 
   //
+
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.25;
+  controls.enableZoom = true;
 
   window.addEventListener( 'resize', onWindowResize, false );
   document.addEventListener( 'keydown', onKeyDown, false );
@@ -236,3 +243,90 @@ function render() {
   renderer.render( scene, camera );
 
 }
+
+
+
+
+
+// CHANGE TEXTURE / IMAGES
+
+var inputOne = document.getElementsByTagName('input')[0];
+var inputTwo = document.getElementsByTagName('input')[1];
+var inputThree = document.getElementsByTagName('input')[2];
+
+var sizeBtn = document.getElementById('changeSizeBtn');
+
+sizeBtn.addEventListener('click', function() {
+  mesh.scale.x = Number(inputOne.value)
+  mesh.scale.y = Number(inputTwo.value)
+  mesh.scale.z = Number(inputThree.value);
+});
+
+
+
+$('button').click(function(event){
+console.log('works');
+// debugger
+var clickedTexture = $(this).text()
+if(clickedTexture === 'texture1'){
+  material.map = texture1;
+  material.needsUpdate = true;
+} else if (clickedTexture === 'texture2'){
+  material.map = texture2;
+  material.needsUpdate = true;
+} else if (clickedTexture === 'texture3'){
+  material.map = texture3;
+  material.needsUpdate = true;
+}
+
+})
+
+
+window.addEventListener('keydown', onKeyboardEvent, false);
+
+
+
+
+//light on L key
+
+  lighting = true;
+
+  ambient = new THREE.AmbientLight(0xffffff, 0.25);
+  scene.add(ambient);
+
+  keyLight = new THREE.DirectionalLight(new THREE.Color('hsl(80, 100%, 75%)'), 1.0);
+  keyLight.position.set(-100, 0, 100);
+
+  fillLight = new THREE.DirectionalLight(new THREE.Color('hsl(100, 100%, 75%)'), 0.75);
+  fillLight.position.set(100, 0, 100);
+
+  backLight = new THREE.DirectionalLight(0xffffff, 3.0);
+  backLight.position.set(100, 0, -100).normalize();
+
+
+
+function onKeyboardEvent(e) {
+
+        if (e.code === 'KeyL') {
+            // console.log('yes');
+            lighting = !lighting;
+
+            if (lighting) {
+
+                ambient.intensity = 0.55;
+                scene.add(keyLight);
+                scene.add(fillLight);
+                scene.add(backLight);
+
+            } else {
+
+                ambient.intensity = 0.10;
+                scene.remove(keyLight);
+                scene.remove(fillLight);
+                scene.remove(backLight);
+
+            }
+
+        }
+
+  }
