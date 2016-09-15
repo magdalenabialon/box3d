@@ -5,6 +5,12 @@ var camera, scene, renderer;
 var material, mesh; //cube
 var lighting, ambient, keyLight, fillLight, backLight;
 var geometry;
+var meshBox;
+
+var material1, material2, material3, material4;
+
+var lambert = new THREE.MeshLambertMaterial({color: 0xffffff, map: texture3})
+
 
 //textures
 var texture1 = THREE.ImageUtils.loadTexture( 'js.jpg' );
@@ -19,8 +25,8 @@ animate();
 
 function init() {
 
-  camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 5, 1200 );
-  camera.position.z = 200;
+  camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 5, 1000 );
+  camera.position.z = 10;
   // camera.focus
   scene = new THREE.Scene();
 
@@ -45,9 +51,8 @@ function init() {
 
 
 
-
-  geometry = new THREE.BoxBufferGeometry( 15, 15, 15 );
-
+//BASIC CUBE
+  geometry = new THREE.BoxBufferGeometry( 2, 2, 2 );
   material = new THREE.MeshStandardMaterial( { map: texture3 } );
 
   mesh = new THREE.Mesh( geometry, material );
@@ -55,17 +60,89 @@ function init() {
 
 
 
+//OBJ BOX
+
+material1 = new THREE.MeshBasicMaterial( { color: 0x00ff00, wireframe: true } );
+// material2 = new THREE.MeshStandardMaterial( { map: texture1 } );
+material3 = new THREE.MeshPhongMaterial( { color: 0x00ff00 } );
+// material4 = new THREE.MeshStandardMaterial( { map: texture3, overdraw: 0.5 } );
+var material5 = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'feature.jpg' ) } ) ;
+material4 = new THREE.MeshStandardMaterial();
+
+
+  var loader = new THREE.OBJLoader();
+  loader.load( 'box.obj', function ( object ) {
+    // object.scale = new THREE.Vector3( 25, 25, 25 );
+
+    object.position.x -= 2.2;
+    object.position.y += 2.8;
+
+    object.scale.x = 1;
+    object.scale.y = 1;
+    object.scale.z = 1;
+
+    var texture = THREE.ImageUtils.loadTexture('js.jpg');
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+
+    texture.repeat.set(2,2);
+
+    var material4 = new THREE.MeshStandardMaterial({
+      map: texture
+    });
+
+    object.traverse( function(child) {
+      if (child instanceof THREE.Mesh){
+        child.material.map = texture
+      }
+    })
+
+    // object.material = material4;
+
+    // debugger
+    // material4.map = loader.load('feature.jpg');
+
+    // debugger
+
+    // material4.map.wrapS = THREE.RepeatWrapping;
+
+    // scene.add( object );
+    //
+    //
+    // // meshBox = new THREE.Mesh( material );
+    //
+    // object.traverse(function(child) {
+    //     if (child instanceof THREE.Mesh){
+    //         child.material = material5;
+    //         // myMesh = child;
+    //         // // myMesh.material.map = THREE.ImageUtils.loadTexture( 'js.jpg');
+    //         // myMesh.material.needsUpdate = true;
+    //     }
+    // });
+    scene.add( object );
+
+  } );
+
+
+
+
+
+
+
 //ground
-  var groundGeo = new THREE.PlaneBufferGeometry( 100, 100 );
+  var groundGeo = new THREE.PlaneBufferGeometry( 20, 20 );
   var groundMat = new THREE.MeshPhongMaterial( { color: 0xffffff, specular: 0x050505 } );
   groundMat.color.setHSL( 0.095, 1, 0.75 );
 
   var ground = new THREE.Mesh( groundGeo, groundMat );
   ground.rotation.x = -Math.PI/2;
-  ground.position.y = -30;
+  ground.position.y = -5;
   scene.add( ground );
 
   ground.receiveShadow = true;
+
+
+
+
 
   //trying to add different shape than the cube
 
